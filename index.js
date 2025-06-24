@@ -42,6 +42,19 @@ app.post('/api/news', async (req, res) => {
   res.json(result);
 });
 
+// ✅ ✅ ✅ تم إضافة هذا الراوت:
+app.patch('/api/news/views/:id', async (req, res) => {
+  try {
+    const result = await newsCollection.updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $inc: { views: 1 } }
+    );
+    res.json({ message: 'News view incremented.', result });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to increase views.' });
+  }
+});
+
 // ====== الإعلانات ======
 app.get('/api/ads', async (req, res) => {
   const ads = await adsCollection.find().sort({ date: -1 }).toArray();
@@ -61,13 +74,13 @@ app.delete('/api/ads/:id', async (req, res) => {
   res.json(result);
 });
 
-// زيادة المشاهدات
+// زيادة مشاهدات الإعلانات
 app.patch('/api/ads/views/:id', async (req, res) => {
   await adsCollection.updateOne(
     { _id: new ObjectId(req.params.id) },
     { $inc: { views: 1 } }
   );
-  res.json({ message: 'View count incremented.' });
+  res.json({ message: 'Ad view incremented.' });
 });
 
 const ADMIN_KEY = process.env.ADMIN_KEY;
