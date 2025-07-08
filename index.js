@@ -28,7 +28,7 @@ client.connect().then(() => {
   console.log("✅ Connected to MongoDB");
 });
 
-// ====== الأخبار ======
+// ====== الأخبار ======// ====== الأخبار ======
 app.get('/api/news', async (req, res) => {
   const news = await newsCollection.find().sort({ date: -1 }).toArray();
   res.json(news);
@@ -42,7 +42,6 @@ app.post('/api/news', async (req, res) => {
   res.json(result);
 });
 
-// ✅ ✅ ✅ تم إضافة هذا الراوت:
 app.patch('/api/news/views/:id', async (req, res) => {
   try {
     const result = await newsCollection.updateOne(
@@ -52,6 +51,20 @@ app.patch('/api/news/views/:id', async (req, res) => {
     res.json({ message: 'News view incremented.', result });
   } catch (err) {
     res.status(500).json({ error: 'Failed to increase views.' });
+  }
+});
+
+// ✅ ✅ ✅ إضافة راوت حذف الأخبار:
+app.delete('/api/news/:id', async (req, res) => {
+  try {
+    const result = await newsCollection.deleteOne({ _id: new ObjectId(req.params.id) });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'الخبر غير موجود' });
+    }
+    res.json({ message: 'تم حذف الخبر بنجاح' });
+  } catch (err) {
+    console.error('❌ خطأ في حذف الخبر:', err);
+    res.status(500).json({ message: 'فشل حذف الخبر' });
   }
 });
 
